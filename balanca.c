@@ -65,33 +65,16 @@ int PilhaVazia(Pilha P)
   return 0;
 }
 
-void CriaGrafo(int *pesos, int nmrItems)
-{
-  int helper = 0;
-
-  while (1)
-  {
-    int *checados = malloc(sizeof(int) * nmrItems);
-
-    for (int i = 0; i < pesos; i++)
-    {
-      /* code */
-    }
-  }
-}
-
-// UTILIZAR O CONCEITO DE BFS PARA PERCORRER OS PESOS E ACHAR A SOLUCAO POSSIVEL
-
 int balanca_julgamento(int numero_itens, int *pesos, int *lados)
 {
-  int check = 0, metade, helper = 1, ladoAux = 0;
+  int check = 0, metade, helper = 1, ladoAux = 0, ativado = 1;
 
   // iterando pelos pesos para verificar se a soma de todos resulta em um numero par
   for (int i = 0; i < numero_itens; i++)
   {
     check += pesos[i];
   }
-  // caso nao seja par, ja finaliza o codigoD
+  // caso nao seja par, ja finaliza o codigo
   if (check % 2 != 0)
     return 0;
 
@@ -103,75 +86,159 @@ int balanca_julgamento(int numero_itens, int *pesos, int *lados)
   //  nossa ideia é ir testando as possibilidades tirando e colocando da pilha ate que
   //  o peso de um dos lados da pilha seja igual a "metade"
   Empilhar(pilhaAux, pesos[0]);
-
-  // trabalhar com o helper, caso as possibilades tenham sido testadas, trocar o helper
-  while (!PilhaVazia(pilhaAux))
-  {
-    if (ladoAux == metade)
-    {
-      printf("ESQUERDO == METADE");
-      break;
-    }
-
-    int retirado = Desimpilhar(ladoAux);
-    ladoAux += retirado;
-
-    if (ladoAux < metade)
-    {
-      Empilhar(pilhaAux, pesos[helper]);
-      printf("ESQUERDO MENOR QUE METADE: %d\n", ladoAux);
-    }
-    else if (ladoAux > metade)
-    {
-      printf("ESQUERDO MAIOR QUE METADE: %d\n", ladoAux);
-      Empilhar(pilhaAux, pesos[helper]);
-      ladoAux -= retirado;
-    }
-    else
-    {
-      printf("CAIU NO ELSE\n");
-      break;
-    }
-
-    helper++;
-  }
-
-  //----------------------------------
-
-  Empilhar(pilhaAux, pesos[0]);
   ladoAux += pesos[0];
 
-  while (!PilhaVazia(pilhaAux))
+  int i = 1;
+
+  while (ativado)
   {
-    if (pilhaAux->topo == pesos[0])
+
+    for (i; i < numero_itens; i++)
     {
-      if (pesos[0] == metade)
+      if (ladoAux == metade)
       {
-        printf("LADO COMPLETO");
+        printf("ESQUERDO == METADE");
+        ativado = 0;
         break;
       }
 
-      continue;
+      Empilhar(pilhaAux, pesos[helper]);
+
+      ladoAux += pilhaAux->topo->peso;
+
+      if (ladoAux > metade)
+      {
+        ladoAux -= pilhaAux->topo->peso;
+        Desimpilhar(pilhaAux);
+      }
     }
 
-    Empilhar(pilhaAux, pesos[helper]);
-    ladoAux += pesos[helper];
+    i++;
+  }
+
+  return 1;
+}
+
+int balanca_for_for(int numero_itens, int *pesos, int *lados)
+{
+  int check = 0, metade, helper = 1, ladoAux = 0, ativado = 1;
+
+  // iterando pelos pesos para verificar se a soma de todos resulta em um numero par
+  for (int i = 0; i < numero_itens; i++)
+  {
+    check += pesos[i];
+  }
+  // caso nao seja par, ja finaliza o codigo
+  if (check % 2 != 0)
+    return 0;
+
+  metade = check / 2;
+
+  Pilha pilhaAux = CriarPilha();
+  Empilhar(pilhaAux, pesos[0]);
+  ladoAux += pilhaAux->topo->peso;
+
+  for (int i = 1; i < numero_itens; i++)
+  {
+
+    for (int j = 1; j < numero_itens; i++)
+    {
+      if (ladoAux == metade)
+      {
+        printf("ESQUERDO == METADO");
+        break;
+        // ver como sair dos dois for
+      }
+
+      Empilhar(pilhaAux, pesos[j]);
+      ladoAux += pilhaAux->topo->peso;
+
+      if (ladoAux > metade)
+      {
+        ladoAux -= pilhaAux->topo->peso;
+        Desimpilhar(pilhaAux);
+      }
+    }
+  }
+
+  return 1;
+}
+
+int balanca_dfs(int numero_itens, int *pesos, int *lados)
+{
+  int ativado = 1, helper = 0, checado = 0;
+  Pilha pilha = CriarPilha();
+  int *listChecados = (int *)malloc(sizeof(int) * numero_itens);
+  for (int i = 0; i < numero_itens; i++)
+  {
+    listChecados[i] = 0;
+  }
+
+  while (ativado)
+  {
+    if (!listChecados[helper])
+    {
+      listChecados[helper] = 1;
+      Empilhar(pilha, pesos[helper]);
+    }
+
+    for (int i = 0; i < numero_itens; i++)
+    {
+    }
+  }
+}
+
+int balanca_2(int numero_itens, int *pesos, int *lados)
+{
+  int ativado = 1, helper = 0, checado = 0, ladoAux = 0, check = 0, metade = 0;
+  int idxPesoAtual = 0;
+
+  // iterando pelos pesos para verificar se a soma de todos resulta em um numero par
+  for (int i = 0; i < numero_itens; i++)
+  {
+    check += pesos[i];
+  }
+  // caso nao seja par, ja finaliza o codigo
+  if (check % 2 != 0)
+    return 0;
+
+  metade = check / 2;
+
+  int *listChecados = (int *)malloc(sizeof(int) * numero_itens);
+  for (int i = 0; i < numero_itens; i++)
+  {
+    listChecados[i] = 0;
+  }
+
+  Pilha pilha = CriarPilha();
+
+  while (ativado)
+  {
+    if (!listChecados[helper])
+    {
+      listChecados[helper] = 1;
+      Empilhar(pilha, pesos[helper]);
+    }
+
+    ladoAux += pilha->topo->peso;
 
     if (ladoAux == metade)
     {
-      printf("LADO COMPLETO");
+      printf("lado == metade!!!!!!");
       break;
     }
-    else if (ladoAux < metade)
+
+    if (ladoAux < metade)
     {
+      helper++;
+      continue;
     }
-  }
 
-  while (1)
-  {
-  }
+    Desimpilhar(pilha);
 
-  // usar pilha pra ir tirando e colocando ate que o resultado seja igual a metade
+    if (PilhaVazia(pilha))
+      break;
+  }
 
   return 1;
 }
