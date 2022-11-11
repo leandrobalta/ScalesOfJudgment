@@ -214,6 +214,17 @@ int balanca_2(int numero_itens, int *pesos, int *lados)
 
   while (ativado)
   {
+
+    if (helper >= numero_itens)
+    {
+      Desimpilhar(pilha);
+      helper = helper - numero_itens - 1;
+      for (int i = helper + 1; i < numero_itens; i++)
+      {
+        listChecados[i] = 0;
+      }
+    }
+
     if (!listChecados[helper])
     {
       listChecados[helper] = 1;
@@ -243,6 +254,69 @@ int balanca_2(int numero_itens, int *pesos, int *lados)
   return 1;
 }
 
+int balanca_meupau(int numero_itens, int *pesos, int *lados)
+{
+  int ativado = 1, helper = 1, checado = 0, ladoAux = 0, check = 0, metade = 0, checando;
+  int idxPesoAtual = 0;
+
+  // iterando pelos pesos para verificar se a soma de todos resulta em um numero par
+  for (int i = 0; i < numero_itens; i++)
+  {
+    check += pesos[i];
+  }
+  // caso nao seja par, ja finaliza o codigo
+  if (check % 2 != 0)
+    return 0;
+
+  metade = check / 2;
+
+  Pilha pilha = CriarPilha();
+  Empilhar(pilha, pesos[0]);
+  ladoAux += pilha->topo->peso;
+
+  for (int i = 1; i < numero_itens; i++)
+  {
+    if (ladoAux == metade)
+    {
+      printf("AEEEEEEEEEEEEE");
+      // make something to break;
+      return 1;
+    }
+
+    Empilhar(pilha, pesos[i]);
+    ladoAux += pilha->topo->peso;
+    checando = i;
+
+    // A PILHA ESTA SE PERDENDO QUANDO DESEMPILHA
+    for (int j = 1; j < numero_itens; j++)
+    {
+      if (ladoAux == metade)
+      {
+        printf("AEEEEEEEEEEEEE");
+        // make something to break;
+        return 1;
+      }
+
+      if (j == checando)
+        continue;
+
+      Empilhar(pilha, pesos[j]);
+      ladoAux += pilha->topo->peso;
+
+      if (ladoAux > metade)
+      {
+        ladoAux -= pilha->topo->peso;
+        Desimpilhar(pilha);
+        continue;
+      }
+    }
+
+    ladoAux -= pilha->topo->peso;
+    Desimpilhar(pilha);
+  }
+
+  return 1;
+}
 //*********************
 // NAO ALTERE A MAIN
 //*********************
@@ -277,7 +351,8 @@ int main(int argc, char *argv[])
   }
 
   // resolvendo
-  tem_solucao = balanca_julgamento(numero_itens, pesos, lados);
+  // tem_solucao = balanca_julgamento(numero_itens, pesos, lados);
+  tem_solucao = balanca_meupau(numero_itens, pesos, lados);
 
   // verificando a solucao
   if (tem_solucao)
