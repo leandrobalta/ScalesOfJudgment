@@ -47,217 +47,54 @@ void Empilhar(Pilha P, int novoPeso)
   P->topo = novoElemento;
 }
 
-int Desimpilhar(Pilha P)
+Pilha Desimpilhar(Pilha P)
 {
   // nova pilha auxiliar
-  int retirado = P->topo->peso;
   Pilha auxPilha = CriarPilha();
   auxPilha->topo = P->topo->proximo;
-  free(P->topo);
-  P = auxPilha;
-  return retirado;
+  free(P);
+  return auxPilha;
 }
 
 int PilhaVazia(Pilha P)
 {
-  if (P == NULL)
+  if (P->topo == NULL)
     return 1;
   return 0;
 }
 
-int balanca_julgamento(int numero_itens, int *pesos, int *lados)
+void AjustaLados(int *lados, Pilha P, int numero_items, int *pesos)
 {
-  int check = 0, metade, helper = 1, ladoAux = 0, ativado = 1;
 
-  // iterando pelos pesos para verificar se a soma de todos resulta em um numero par
-  for (int i = 0; i < numero_itens; i++)
+  // setando todos os lados como 1
+  for (int i = 0; i < numero_items; i++)
   {
-    check += pesos[i];
+    lados[i] = 1;
   }
-  // caso nao seja par, ja finaliza o codigo
-  if (check % 2 != 0)
-    return 0;
 
-  metade = check / 2;
+  int i = 0;
 
-  Pilha pilhaAux = CriarPilha();
-
-  // Colocando o primeiro peso em um dos lados da balanca
-  //  nossa ideia é ir testando as possibilidades tirando e colocando da pilha ate que
-  //  o peso de um dos lados da pilha seja igual a "metade"
-  Empilhar(pilhaAux, pesos[0]);
-  ladoAux += pesos[0];
-
-  int i = 1;
-
-  while (ativado)
+  // ir passando pro lado 0 os items da pilha
+  while (!PilhaVazia(P))
   {
-
-    for (i; i < numero_itens; i++)
+    if (pesos[i] == P->topo->peso)
     {
-      if (ladoAux == metade)
-      {
-        printf("ESQUERDO == METADE");
-        ativado = 0;
-        break;
-      }
-
-      Empilhar(pilhaAux, pesos[helper]);
-
-      ladoAux += pilhaAux->topo->peso;
-
-      if (ladoAux > metade)
-      {
-        ladoAux -= pilhaAux->topo->peso;
-        Desimpilhar(pilhaAux);
-      }
+      lados[i] = 0;
+      P = Desimpilhar(P);
     }
 
-    i++;
-  }
-
-  return 1;
-}
-
-int balanca_for_for(int numero_itens, int *pesos, int *lados)
-{
-  int check = 0, metade, helper = 1, ladoAux = 0, ativado = 1;
-
-  // iterando pelos pesos para verificar se a soma de todos resulta em um numero par
-  for (int i = 0; i < numero_itens; i++)
-  {
-    check += pesos[i];
-  }
-  // caso nao seja par, ja finaliza o codigo
-  if (check % 2 != 0)
-    return 0;
-
-  metade = check / 2;
-
-  Pilha pilhaAux = CriarPilha();
-  Empilhar(pilhaAux, pesos[0]);
-  ladoAux += pilhaAux->topo->peso;
-
-  for (int i = 1; i < numero_itens; i++)
-  {
-
-    for (int j = 1; j < numero_itens; i++)
+    if (i == numero_items)
     {
-      if (ladoAux == metade)
-      {
-        printf("ESQUERDO == METADO");
-        break;
-        // ver como sair dos dois for
-      }
-
-      Empilhar(pilhaAux, pesos[j]);
-      ladoAux += pilhaAux->topo->peso;
-
-      if (ladoAux > metade)
-      {
-        ladoAux -= pilhaAux->topo->peso;
-        Desimpilhar(pilhaAux);
-      }
-    }
-  }
-
-  return 1;
-}
-
-int balanca_dfs(int numero_itens, int *pesos, int *lados)
-{
-  int ativado = 1, helper = 0, checado = 0;
-  Pilha pilha = CriarPilha();
-  int *listChecados = (int *)malloc(sizeof(int) * numero_itens);
-  for (int i = 0; i < numero_itens; i++)
-  {
-    listChecados[i] = 0;
-  }
-
-  while (ativado)
-  {
-    if (!listChecados[helper])
-    {
-      listChecados[helper] = 1;
-      Empilhar(pilha, pesos[helper]);
-    }
-
-    for (int i = 0; i < numero_itens; i++)
-    {
-    }
-  }
-}
-
-int balanca_2(int numero_itens, int *pesos, int *lados)
-{
-  int ativado = 1, helper = 0, checado = 0, ladoAux = 0, check = 0, metade = 0;
-  int idxPesoAtual = 0;
-
-  // iterando pelos pesos para verificar se a soma de todos resulta em um numero par
-  for (int i = 0; i < numero_itens; i++)
-  {
-    check += pesos[i];
-  }
-  // caso nao seja par, ja finaliza o codigo
-  if (check % 2 != 0)
-    return 0;
-
-  metade = check / 2;
-
-  int *listChecados = (int *)malloc(sizeof(int) * numero_itens);
-  for (int i = 0; i < numero_itens; i++)
-  {
-    listChecados[i] = 0;
-  }
-
-  Pilha pilha = CriarPilha();
-
-  while (ativado)
-  {
-
-    if (helper >= numero_itens)
-    {
-      Desimpilhar(pilha);
-      helper = helper - numero_itens - 1;
-      for (int i = helper + 1; i < numero_itens; i++)
-      {
-        listChecados[i] = 0;
-      }
-    }
-
-    if (!listChecados[helper])
-    {
-      listChecados[helper] = 1;
-      Empilhar(pilha, pesos[helper]);
-    }
-
-    ladoAux += pilha->topo->peso;
-
-    if (ladoAux == metade)
-    {
-      printf("lado == metade!!!!!!");
-      break;
-    }
-
-    if (ladoAux < metade)
-    {
-      helper++;
+      i = 0;
       continue;
     }
-
-    Desimpilhar(pilha);
-
-    if (PilhaVazia(pilha))
-      break;
+    i++;
   }
-
-  return 1;
 }
 
-int balanca_meupau(int numero_itens, int *pesos, int *lados)
+int balanca_julgamento(int numero_itens, int *pesos, int *lados)
 {
-  int ativado = 1, helper = 1, checado = 0, ladoAux = 0, check = 0, metade = 0, checando;
-  int idxPesoAtual = 0;
+  int ladoAux = 0, check = 0, metade = 0;
 
   // iterando pelos pesos para verificar se a soma de todos resulta em um numero par
   for (int i = 0; i < numero_itens; i++)
@@ -270,52 +107,54 @@ int balanca_meupau(int numero_itens, int *pesos, int *lados)
 
   metade = check / 2;
 
+  // criando a pilha e colocando o primeiro item
   Pilha pilha = CriarPilha();
   Empilhar(pilha, pesos[0]);
   ladoAux += pilha->topo->peso;
 
   for (int i = 1; i < numero_itens; i++)
   {
+
     if (ladoAux == metade)
     {
-      printf("AEEEEEEEEEEEEE");
-      // make something to break;
+      AjustaLados(lados, pilha, numero_itens, pesos);
       return 1;
     }
 
     Empilhar(pilha, pesos[i]);
     ladoAux += pilha->topo->peso;
-    checando = i;
 
-    // A PILHA ESTA SE PERDENDO QUANDO DESEMPILHA
-    for (int j = 1; j < numero_itens; j++)
+    if (ladoAux > metade)
+    {
+      ladoAux -= pesos[i];
+      pilha = Desimpilhar(pilha);
+    }
+
+    for (int j = i + 1; j < numero_itens; j++)
     {
       if (ladoAux == metade)
       {
-        printf("AEEEEEEEEEEEEE");
-        // make something to break;
+        AjustaLados(lados, pilha, numero_itens, pesos);
         return 1;
       }
-
-      if (j == checando)
-        continue;
 
       Empilhar(pilha, pesos[j]);
       ladoAux += pilha->topo->peso;
 
       if (ladoAux > metade)
       {
-        ladoAux -= pilha->topo->peso;
-        Desimpilhar(pilha);
-        continue;
+        ladoAux -= pesos[j];
+        pilha = Desimpilhar(pilha);
       }
     }
 
     ladoAux -= pilha->topo->peso;
-    Desimpilhar(pilha);
+    pilha = Desimpilhar(pilha);
   }
 
-  return 1;
+  // apos resolver o lado, usar um while(!pilhavazia) e ir desimpilhando e virificando qual a posicao dele em lados
+
+  return 0;
 }
 //*********************
 // NAO ALTERE A MAIN
@@ -351,8 +190,8 @@ int main(int argc, char *argv[])
   }
 
   // resolvendo
-  // tem_solucao = balanca_julgamento(numero_itens, pesos, lados);
-  tem_solucao = balanca_meupau(numero_itens, pesos, lados);
+  tem_solucao = balanca_julgamento(numero_itens, pesos, lados);
+  // tem_solucao = balanca_meupau(numero_itens, pesos, lados);
 
   // verificando a solucao
   if (tem_solucao)
