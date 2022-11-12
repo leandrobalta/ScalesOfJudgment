@@ -5,16 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// TODO implementar essa funcao, voce pode criar outras funcoes
-// e outros structs que achar necessario
-// Devolve 0 se naum existe solucao
-// devolve 1 se existe solucao, e nesse caso deve preencher o
-// arranjo lados com 0 ou 1 para cada item indicando qual prato
-// esta cada item
-
-// USAMOS A MESMAS CONSTRUCOES DE STRUCTS E TYPES DAS AULAS DE FILAS
-// POREM APLICANDO PARA O CONCEITO DE PILHAS
-
 // criando a o tipo / estrutura do "elemento" da pilha
 typedef struct TypeElemento
 {
@@ -112,6 +102,8 @@ int balanca_julgamento(int numero_itens, int *pesos, int *lados)
   Empilhar(pilha, pesos[0]);
   ladoAux += pilha->topo->peso;
 
+  // fluxo normal, em grande maioria dos casos vai resolver a partir dessa analise
+  // caso resolva retorna 1 e organiza os lados
   for (int i = 1; i < numero_itens; i++)
   {
 
@@ -152,7 +144,59 @@ int balanca_julgamento(int numero_itens, int *pesos, int *lados)
     pilha = Desimpilhar(pilha);
   }
 
-  // apos resolver o lado, usar um while(!pilhavazia) e ir desimpilhando e virificando qual a posicao dele em lados
+  // caso mesmo apos a analise anterior nao tenha tado resultado ainda
+  // verificasse novamente de tras pra frente
+  while (!PilhaVazia(pilha))
+  {
+    pilha = Desimpilhar(pilha);
+  }
+  ladoAux = 0;
+  Empilhar(pilha, pesos[numero_itens - 1]);
+  ladoAux += pilha->topo->peso;
+
+  // comeca a partir do penultimo item, porque o ultimo item ja foi colocado na pilha
+  // logo apos faz a verificação de tras pra frente
+  for (int i = numero_itens - 2; i >= 0; i--)
+  {
+
+    if (ladoAux == metade)
+    {
+      AjustaLados(lados, pilha, numero_itens, pesos);
+      return 1;
+    }
+
+    Empilhar(pilha, pesos[i]);
+    ladoAux += pilha->topo->peso;
+
+    if (ladoAux > metade)
+    {
+      ladoAux -= pesos[i];
+      pilha = Desimpilhar(pilha);
+    }
+
+    for (int j = i - 1; j >= 0; j--)
+    {
+      if (ladoAux == metade)
+      {
+        AjustaLados(lados, pilha, numero_itens, pesos);
+        return 1;
+      }
+
+      Empilhar(pilha, pesos[j]);
+      ladoAux += pilha->topo->peso;
+
+      if (ladoAux > metade)
+      {
+        ladoAux -= pesos[j];
+        pilha = Desimpilhar(pilha);
+      }
+    }
+
+    ladoAux -= pilha->topo->peso;
+    pilha = Desimpilhar(pilha);
+  }
+
+  // caso nenhuma das duas analises anteriores derem certo retorna 0
 
   return 0;
 }
